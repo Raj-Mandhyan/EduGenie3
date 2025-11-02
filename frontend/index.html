@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Teaching Assistant</title>
+    
+    <!-- 1. Load Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 2. Load Google Fonts (Orbitron & Space Grotesk) --><link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- 3. Load Heroicons --><script type="module" src="https://unpkg.com/heroicons@2.1.1/24/outline/index.js"></script>
+
+    <!-- 4. Custom Styles (Fonts, Glassmorphism, Animations, NEW: Galaxy Starfield) --><style>
+        /* Apply Base Font */
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            position: relative; 
+            /* NEW: Radial Gradient for a deep-space nebula effect */
+            background-color: #000;
+            background-image: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+            overflow: hidden; /* Hide particles that go off screen */
+            min-height: 100vh;
+        }
+
+        /* Apply Header Font */
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Glassmorphism Card Style */
+        .glass-card {
+            background: rgba(17, 24, 39, 0.65); /* Dark gray/blue glass */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative; /* Needed for the glowing border */
+            overflow: hidden; /* Hide overflow from glow */
+            z-index: 10; /* Ensure cards are above background animation */
+        }
+
+        /* Animated Glowing Border */
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border: 2px solid transparent;
+            border-radius: 1rem; /* Must match card's rounded-2xl */
+            background: linear-gradient(120deg, #818CF8, #EC4899, #6366F1) border-box;
+            -webkit-mask: 
+                linear-gradient(#fff 0 0) padding-box, 
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: destination-out;
+            mask-composite: exclude;
+            animation: gradient-spin 4s linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes gradient-spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* Custom Animated Loader */
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid rgba(255, 255, 255, 0.2); /* Lighter border */
+            border-bottom-color: #818CF8; /* Lighter Indigo */
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* Button Pulse Animation */
+        @keyframes pulse-light {
+            0%, 100% {
+                box-shadow: 0 0 10px #6366F1;
+            }
+            50% {
+                box-shadow: 0 0 20px #818CF8;
+            }
+        }
+        .animate-pulse-light {
+            animation: pulse-light 2s linear infinite;
+        }
+
+        /* * NEW: Parallax Starfield Animation 
+         * This uses a clever CSS trick with box-shadow to create 
+         * hundreds of stars from just 3 divs.
+        */
+        @keyframes animateStars {
+            from {
+                transform: translateY(0px);
+            }
+            to {
+                transform: translateY(-2000px); /* This moves the stars "down" */
+            }
+        }
+
+        /* Base styles for all star layers */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Layer 1: Small, slow stars (far away) */
+        #stars1 {
+            width: 1px;
+            height: 1px;
+            background: transparent;
+            animation: animateStars 50s linear infinite;
+            /* This long list creates 700 stars */
+            box-shadow: 749px 1588px #FFF, 173px 1475px #FFF, 1262px 1287px #FFF, 1530px 1018px #FFF, 1512px 153px #FFF, 891px 1684px #FFF, 1374px 1747px #FFF, 1063px 1863px #FFF, 1222px 1416px #FFF, 908px 552px #FFF, 1338px 904px #FFF, 664px 621px #FFF, 102px 1032px #FFF, 109px 128px #FFF, 1188px 103px #FFF, 1431px 1198px #FFF, 1011px 1025px #FFF, 1378px 1145px #FFF, 1097px 181px #FFF, 135px 956px #FFF, 1391px 1318px #FFF, 819px 707px #FFF, 1324px 1105px #FFF, 856px 663px #FFF, 1515px 120px #FFF, 401px 1352px #FFF, 913px 1561px #FFF, 755px 1753px #FFF, 475px 819px #FFF, 114px 1999px #FFF, 187px 1133px #FFF, 584px 1113px #FFF, 1112px 1332px #FFF, 1381px 1695px #FFF, 1056px 1438px #FFF, 750px 1827px #FFF, 1194px 93px #FFF, 542px 731px #FFF, 1108px 1076px #FFF, 1238px 1375px #FFF, 1178px 1690px #FFF, 1419px 1011px #FFF, 1242px 1757px #FFF, 1204px 1061px #FFF, 1489px 1109px #FFF, 1091px 260px #FFF, 1121px 1258px #FFF, 1072px 1341px #FFF, 1538px 1416px #FFF, 439px 1500px #FFF, 1162px 641px #FFF, 966px 1842px #FFF, 1481px 531px #FFF, 902px 337px #FFF, 591px 900px #FFF, 1437px 461px #FFF, 1533px 102px #FFF, 1344px 115px #FFF, 626px 1007px #FFF, 929px 1137px #FFF, 706px 1289px #FFF, 1383px 1626px #FFF, 814px 499px #FFF, 1361px 1531px #FFF, 1348px 1269px #FFF, 689px 1789px #FFF, 1459px 1978px #FFF, 715px 1238px #FFF, 702px 913px #FFF, 899px 1933px #FFF, 904px 1779px #FFF, 219px 1303px #FFF, 150px 1787px #FFF, 1511px 412px #FFF, 451px 199px #FFF, 1022px 556px #FFF, 104px 1819px #FFF, 521px 1813px #FFF, 1341px 1211px #FFF, 1032px 1904px #FFF, 499px 1218px #FFF, 1420px 1891px #FFF, 904px 1697px #FFF, 1309px 1618px #FFF, 408px 1413px #FFF, 990px 1629px #FFF, 1508px 671px #FFF, 84px 1761px #FFF, 1111px 311px #FFF, 1404px 1432px #FFF, 128px 1161px #FFF, 1354px 1018px #FFF, 1381px 406px #FFF, 717px 921px #FFF, 1133px 1869px #FFF, 768px 1836px #FFF, 1146px 1475px #FFF, 650px 1627px #FFF, 142px 1243px #FFF, 1039px 707px #FFF, 1110px 1944px #FFF, 1474px 1600px #FFF, 931px 505px #FFF, 1009px 1211px #FFF, 921px 1435px #FFF, 144px 213px #FFF, 829px 587px #FFF, 1360px 1139px #FFF, 680px 1971px #FFF, 1402px 1331px #FFF, 224px 235px #FFF, 1212px 1198px #FFF, 401px 1555px #FFF, 1136px 868px #FFF, 1181px 313px #FFF, 140px 1735px #FFF, 706px 1152px #FFF, 346px 1716px #FFF, 1421px 638px #FFF, 917px 1733px #FFF, 1018px 1541px #FFF, 350px 1196px #FFF, 1335px 1253px #FFF, 1181px 475px #FFF, 807px 1101px #FFF, 1113px 1195px #FFF, 942px 1121px #FFF, 246px 1012px #FFF, 1201px 859px #FFF, 1373px 736px #FFF, 1024px 1133px #FFF, 544px 1319px #FFF, 1461px 1503px #FFF, 1032px 1716px #FFF, 1261px 608px #FFF, 1214px 1860px #FFF, 1188px 1782px #FFF, 998px 1711px #FFF, 1051px 1045px #FFF, 221px 715px #FFF, 135px 335px #FFF, 1321px 1374px #FFF, 1035px 175px #FFF, 1450px 1238px #FFF, 888px 1152px #FFF, 606px 1500px #FFF, 303px 1060px #FFF, 1282px 556px #FFF, 1188px 1159px #FFF, 1281px 1546px #FFF, 1441px 1381px #FFF, 502px 1195px #FFF, 1019px 1319px #FFF, 1230px 1276px #FFF, 481px 1391px #FFF, 1205px 1109px #FFF, 893px 1856px #FFF, 681px 1334px #FFF, 85px 1993px #FFF, 130px 1013px #FFF, 1214px 1357px #FFF, 420px 1632px #FFF, 915px 1806px #FFF, 1460px 921px #FFF, 584px 998px #FFF, 1007px 1025px #FFF, 889px 653px #FFF, 1503px 934px #FFF, 1374px 899px #FFF, 1290px 1478px #FFF, 1117px 129px #FFF, 822px 132px #FFF, 281px 406px #FFF, 76px 1717px #FFF, 1119px 1153px #FFF, 1305px 1978px #FFF, 64px 1494px #FFF, 1492px 728px #FFF, 1003px 1561px #FFF, 523px 1222px #FFF, 903px 1283px #FFF, 1338px 1014px #FFF, 638px 1121px #FFF, 1450px 1588px #FFF, 631px 1123px #FFF, 1419px 1253px #FFF, 1001px 166px #FFF, 567px 196px #FFF, 526px 1618px #FFF, 1410px 1747px #FFF, 1441px 1818px #FFF, 1528px 1176px #FFF, 1120px 1772px #FFF, 1269px 1330px #FFF, 1208px 1547px #FFF, 1435px 1478px #FFF, 1010px 791px #FFF, 342px 1399px #FFF, 911px 1810px #FFF, 1178px 1522px #FFF, 1468px 1645px #FFF, 149px 1902px #FFF, 1101px 1961px #FFF, 1060px 1802px #FFF, 437px 1817px #FFF, 1076px 1030px #FFF, 1406px 1243px #FFF, 874px 1758px #FFF, 650px 1184px #FFF, 1354px 1481px #FFF, 1432px 1079px #FFF, 1422px 1004px #FFF, 1117px 1076px #FFF, 1113px 1712px #FFF, 532px 1835px #FFF, 1025px 957px #FFF, 1114px 1464px #FFF, 901px 175px #FFF, 1318px 973px #FFF, 613px 1395px #FFF, 1226px 1186px #FFF, 607px 1782px #FFF, 1058px 1109px #FFF, 1200px 1891px #FFF, 1515px 1797px #FFF, 1045px 1511px #FFF, 1381px 1002px #FFF, 831px 1303px #FFF, 1434px 1608px #FFF, 1481px 1330px #FFF, 1146px 610px #FFF, 1044px 1933px #FFF, 1118px 1399px #FFF, 137px 352px #FFF, 882px 1365px #FFF, 1128px 1813px #FFF, 762px 1802px #FFF, 919px 1341px #FFF, 1324px 1675px #FFF, 1214px 1364px #FFF, 502px 1297px #FFF, 1048px 1345px #FFF, 1014px 1475px #FFF, 412px 1782px #FFF, 1239px 1746px #FFF, 1075px 1416px #FFF, 506px 1546px #FFF, 1142px 1774px #FFF, 1113px 1555px #FFF, 1374px 1298px #FFF, 1226px 1572px #FFF, 888px 1888px #FFF, 1480px 1405px #FFF, 599px 1368px #FFF, 1432px 1121px #FFF, 1297px 1599px #FFF, 817px 1182px #FFF, 1017px 1114px #FFF, 1130px 617px #FFF, 1398px 1060px #FFF, 1153px 1494px #FFF, 1284px 1083px #FFF, 1430px 1348px #FFF, 804px 1324px #FFF, 1115px 1618px #FFF, 323px 1890px #FFF, 1205px 1883px #FFF, 1408px 1402px #FFF, 1103px 1858px #FFF, 1059px 1295px #FFF, 1362px 1300px #FFF, 1024px 1714px #FFF, 742px 1957px #FFF, 1346px 1318px #FFF, 1327px 1472px #FFF, 1499px 1771px #FFF, 1214px 1487px #FFF, 1218px 1515px #FFF, 731px 1804px #FFF, 513px 1768px #FFF, 1303px 1530px #FFF, 1251px 1198px #FFF, 1417px 1176px #FFF, 1380px 1827px #FFF, 1057px 1582px #FFF, 1318px 1495px #FFF, 1018px 1300px #FFF, 1137px 1411px #FFF, 1109px 1888px #FFF, 743px 1806px #FFF, 119px 1603px #FFF, 810px 1276px #FFF, 1063px 1332px #FFF, 508px 1131px #FFF, 1002px 1207px #FFF, 1050px 1159px #FFF, 937px 1520px #FFF, 1453px 1324px #FFF, 1242px 1300px #FFF, 1118px 1272px #FFF, 621px 1779px #FFF, 1243px 1047px #FFF, 742px 1771px #FFF, 1162px 1993px #FFF, 985px 1867px #FFF, 1146px 1325px #FFF, 1373px 1175px #FFF, 1205px 1826px #FFF, 1032px 1172px #FFF, 638px 1341px #FFF, 1173px 1599px #FFF, 1317px 1114px #FFF, 788px 1916px #FFF, 1445px 1207px #FFF, 1114px 1808px #FFF, 1346px 1957px #FFF, 1079px 1494px #FFF, 1083px 1043px #FFF, 1383px 1416px #FFF, 679px 1876px #FFF, 1375px 1011px #FFF, 1098px 1402px #FFF, 1015px 1113px #FFF, 1416px 1511px #FFF, 1070px 1572px #FFF, 903px 1842px #FFF, 1381px 1105px #FFF, 1370px 1211px #FFF, 1481px 1184px #FFF, 1314px 1735px #FFF, 1389px 1761px #FFF, 1459px 1090px #FFF, 1143px 1319px #FFF, 1170px 1238px #FFF, 1303px 1052px #FFF, 1201px 1541px #FFF, 1416px 1782px #FFF, 1378px 1980px #FFF, 831px 1944px #FFF, 1301px 1182px #FFF, 1048px 1007px #FFF, 1072px 1515px #FFF, 1414px 1645px #FFF, 1362px 1133px #FFF, 1016px 1695px #FFF, 1449px 1047px #FFF, 1241px 1152px #FFF, 1065px 1107px #FFF, 1421px 1804px #FFF, 1004px 1757px #FFF, 715px 1999px #FFF, 1334px 1933px #FFF, 542px 1712px #FFF, 1413px 1012px #FFF, 1181px 1961px #FFF, 1005px 1081px #FFF, 1125px 1002px #FFF, 1121px 1341px #FFF, 1051px 1709px #FFF, 1371px 1944px #FFF, 1162px 1253px #FFF, 1117px 1933px #FFF, 1324px 1747px #FFF, 1032px 1530px #FFF, 1131px 1457px #FFF, 1271px 1253px #FFF, 1121px 1876px #FFF, 966px 1588px #FFF, 1019px 1531px #FFF, 1233px 1779px #FFF, 1388px 1030px #FFF, 1030px 1218px #FFF, 1375px 1856px #FFF, 1230px 1842px #FFF, 903px 1494px #FFF, 1123px 1357px #FFF, 1382px 1332px #FFF, 1128px 1980px #FFF, 1440px 1332px #FFF, 1338px 1435px #FFF, 1080px 1423px #FFF, 1029px 1381px #FFF, 1008px 1789px #FFF, 1250px 1709px #FFF, 1324px 1014px #FFF, 1156px 1159px #FFF, 1138px 1411px #FFF, 1388px 1109px #FFF, 983px 1243px #FFF, 1459px 1494px #FFF, 1211px 1961px #FFF, 1445px 1076px #FFF, 1052px 1487px #FFF, 1113px 1032px #FFF, 1398px 1629px #FFF, 1158px 1572px #FFF, 814px 1813px #FFF, 1150px 1269px #FFF, 1422px 1758px #FFF, 1072px 1172px #FFF, 1457px 1133px #FFF, 1303px 1381px #FFF, 1261px 1375px #FFF, 1432px 1709px #FFF, 1461px 1690px #FFF, 1081px 1888px #FFF, 1408px 1365px #FFF, 1030px 1735px #FFF, 1267px 1222px #FFF, 1217px 1341px #FFF, 1445px 1541px #FFF, 1032px 1599px #FFF, 1344px 1761px #FFF, 1488px 1819px #FFF, 883px 1746px #FFF, 1017px 1341px #FFF, 1341px 1090px #FFF, 1333px 1391px #FFF, 1018px 1916px #FFF, 1430px 1457px #FFF, 1391px 1464px #FFF, 1476px 1381px #FFF, 1222px 1779px #FFF, 1045px 1287px #FFF, 1175px 1411px #FFF, 1226px 1172px #FFF, 975px 1883px #FFF, 1001px 1318px #FFF, 1400px 1531px #FFF, 1018px 1757px #FFF, 1248px 1961px #FFF, 1133px 1758px #FFF, 1162px 1334px #FFF, 1121px 1599px #FFF, 1101px 1771px #FFF, 1154px 1690px #FFF, 1156px 1827px #FFF, 1100px 1447px #FFF, 1103px 1405px #FFF, 1080px 1159px #FFF, 1170px 1782px #FFF, 1098px 1238px #FFF, 1022px 1495px #FFF, 1121px 1318px #FFF, 1173px 1457px #FFF, 1004px 1810px #FFF, 1143px 1330px #FFF, 1255px 1531px #FFF, 1101px 1318px #FFF, 1238px 1572px #FFF, 1120px 1423px #FFF, 1056px 1472px #FFF, 1269px 1253px #FFF, 1001px 1475px #FFF, 1024px 1047px #FFF, 1123px 1690px #FFF, 1098px 1153px #FFF, 1181px 1381px #FFF, 1085px 1283px #FFF, 1113px 1391px #FFF, 1178px 1107px #FFF, 1431px 1405px #FFF, 1175px 1757px #FFF, 1146px 1152px #FFF, 1070px 1432px #FFF, 1032px 1883px #FFF, 1271px 1819px #FFF, 1037px 1123px #FFF, 1083px 1391px #FFF, 1075px 1891px #FFF, 1221px 1819px #FFF, 1136px 1916px #FFF, 1113px 1608px #FFF, 1022px 1395px #FFF, 1205px 1402px #FFF, 1051px 1364px #FFF, 1085px 1608px #FFF, 1374px 1375px #FFF, 1230px 1047px #FFF, 1158px 1971px #FFF, 1098px 1980px #FFF, 1354px 1608px #FFF, 1030px 1052px #FFF, 1060px 1561px #FFF, 1022px 1804px #FFF, 1420px 1195px #FFF, 1214px 1175px #FFF, 1080px 1735px #FFF, 1091px 1238px #FFF, 1113px 1999px #FFF, 1110px 1608px #FFF, 1118px 1789px #FFF, 1205px 1184px #FFF, 1447px 1411px #FFF, 1058px 1904px #FFF, 1150px 1980px #FFF, 1123px 1133px #FFF, 1374px 1061px #FFF, 1017px 1804px #FFF, 1389px 1222px #FFF, 1111px 1599px #FFF, 1133px 1133px #FFF, 1109px 1211px #FFF, 1022px 1182px #FFF, 1056px 1779px #FFF, 1136px 1300px #FFF, 1014px 1813px #FFF, 1435px 1391px #FFF, 1085px 1827px #FFF, 1056px 1283px #FFF, 1063px 1014px #FFF, 1158px 1025px #FFF, 1320px 1757px #FFF, 1146px 1004px #FFF, 1335px 1334px #FFF, 1048px 1712px #FFF, 1060px 1105px #FFF, 1076px 1618px #FFF, 1101px 1435px #FFF, 1032px 1478px #FFF, 1162px 1733px #FFF, 1007px 1004px #FFF, 1014px 1599px #FFF, 1017px 1238px #FFF, 1080px 1869px #FFF, 1214px 1867px #FFF, 1039px 1481px #FFF, 1025px 1520px #FFF, 1001px 1813px #FFF, 1018px 1159px #FFF, 1002px 1757px #FFF, 1021px 1668px #FFF, 1052px 1869px #FFF, 1025px 1195px #FFF, 1030px 1013px #FFF, 1008px 1332px #FFF, 1004px 1332px #FFF, 1015px 1916px #FFF, 1019px 1159px #FFF, 1004px 1520px #FFF, 1008px 1025px #FFF, 1146px 1746px #FFF, 1002px 1618px #FFF, 1010px 1971px #FFF, 1039px 1303px #FFF, 1060px 1405px #FFF, 1016px 1289px #FFF, 1004px 1402px #FFF, 1014px 1060px #FFF, 1008px 1690px #FFF, 1016px 1961px #FFF, 1001px 1487px #FFF, 1018px 1457px #FFF, 1010px 1531px #FFF, 1037px 1753px #FFF, 1016px 1423px #FFF, 1014px 1684px #FFF, 1001px 1276px #FFF, 1002px 1114px #FFF, 1010px 1375px #FFF, 1014px 1218px #FFF, 1019px 1629px #FFF, 1004px 1159px #FFF, 1008px 1572px #FFF, 1014px 1869px #FFF, 1011px 1827px #FFF, 1002px 1047px #FFF, 1010px 1114px #FFF, 1004px 1675px #FFF, 1008px 1198px #FFF, 1016px 1207px #FFF, 1001px 1869px #FFF, 1002px 1172px #FFF, 1010px 1332px #FFF, 1004px 1902px #FFF, 1008px 1207px #FFF, 1016px 1522px #FFF, 1001px 1978px #FFF, 1002px 1238px #FFF, 1010px 1520px #FFF, 1004px 1842px #FFF, 1008px 1159px #FFF, 1016px 1405px #FFF, 1001px 1890px #FFF, 1002px 1364px #FFF, 1010px 1375px #FFF, 1004px 1645px #FFF, 1008px 1435px #FFF, 1016px 1184px #FFF, 1001px 1806px #FFF, 1002px 1013px #FFF, 1010px 1381px #FFF, 1004px 1618px #FFF, 1008px 1599px #FFF, 1016px 1588px #FFF, 1001px 1904px #FFF, 1002px 1300px #FFF, 1010px 1182px #FFF, 1004px 1608px #FFF, 1008px 1779px #FFF, 1016px 1588px #FFF, 1001px 1735px #FFF, 1002px 1341px #FFF, 1010px 1133px #FFF, 1004px 1867px #FFF, 1008px 1888px #FFF, 1016px 1481px #FFF, 1001px 1856px #FFF, 1002px 1131px #FFF, 1010px 1109px #FFF, 1004px 1817px #FFF, 1008px 1761px #FFF, 1016px 1357px #FFF, 1001px 1690px #FFF, 1002px 1334px #FFF, 1010px 1283px #FFF, 1004px 1876px #FFF, 1008px 1772px #FFF, 1016px 1207px #FFF;
+        }
+
+        /* Layer 3: Large, fastest stars (close up) */
+        #stars3 {
+            width: 3px;
+            height: 3px;
+            background: transparent;
+            animation: animateStars 150s linear infinite;
+            /* This long list creates 100 stars */
+            box-shadow: 1021px 1004px #FFF, 1180px 1411px #FFF, 1269px 1176px #FFF, 1419px 1222px #FFF, 1233px 1107px #FFF, 1312px 1668px #FFF, 549px 1137px #FFF, 1303px 1318px #FFF, 1267px 1374px #FFF, 621px 1133px #FFF, 1188px 1012px #FFF, 1150px 1334px #FFF, 1121px 1060px #FFF, 1032px 1076px #FFF, 100px 1980px #FFF, 544px 1182px #FFF, 1113px 1011px #FFF, 1034px 1107px #FFF, 1148px 1047px #FFF, 1076px 1018px #FFF, 1024px 1123px #FFF, 1445px 1131px #FFF, 1121px 1004px #FFF, 1005px 1002px #FFF, 1048px 1131px #FFF, 1222px 1107px #FFF, 1091px 1012px #FFF, 1474px 1175px #FFF, 1148px 1018px #FFF, 1007px 1109px #FFF, 1422px 1018px #FFF, 1030px 1076px #FFF, 1002px 1121px #FFF, 1432px 1109px #FFF, 1111px 1107px #FFF, 1241px 1109px #FFF, 1309px 1018px #FFF, 1056px 1131px #FFF, 1450px 1133px #FFF, 1137px 1123px #FFF, 1014px 1107px #FFF, 1081px 1012px #FFF, 1148px 1030px #FFF, 1101px 1123px #FFF, 1018px 1123px #FFF, 1453px 1018px #FFF, 1076px 1002px #FFF, 1024px 1107px #FFF, 1445px 1107px #FFF, 1121px 1011px #FFF, 1005px 1018px #FFF, 1048px 1107px #FFF, 1222px 1012px #FFF, 1091px 1004px #FFF, 1474px 1133px #FFF, 1148px 1012px #FFF, 1007px 1014px #FFF, 1422px 1012px #FFF, 1030px 1060px #FFF, 1002px 1105px #FFF, 1432px 1014px #FFF, 1111px 1012px #FFF, 1241px 1014px #FFF, 1309px 1012px #FFF, 1056px 1107px #FFF, 1450px 1109px #FFF, 1137px 1107px #FFF, 1014px 1012px #FFF, 1081px 1004px #FFF, 1148px 1014px #FFF, 1101px 1107px #FFF, 1018px 1107px #FFF, 1453px 1012px #FFF, 1076px 1018px #FFF, 1024px 1012px #FFF, 1445px 1012px #FFF, 1121px 1004px #FFF, 1005px 1012px #FFF, 1048px 1012px #FFF, 1222px 1004px #FFF, 1091px 1018px #FFF, 1474px 1109px #FFF, 1148px 1004px #FFF, 1007px 1002px #FFF, 1422px 1004px #FFF, 1030px 1012px #FFF, 1002px 1011px #FFF, 1432px 1002px #FFF, 1111px 1004px #FFF, 1241px 1002px #FFF, 1309px 1004px #FFF, 1056px 1012px #FFF, 1450px 1002px #FFF, 1137px 1012px #FFF;
+        }
+
+    </style>
+</head>
+
+<!-- Animated Gradient Background --><body class="min-h-screen text-gray-100">
+    
+    <!-- NEW: Parallax Starfield Layers -->
+    <div id="stars1" class="stars"></div>
+    <div id="stars2" class="stars"></div>
+    <div id="stars3" class="stars"></div>
+
+    <!-- Main Container - z-20 ensures it's on top of the z-0 stars -->
+    <div class="container mx-auto p-4 md:p-8 relative z-20">
+        
+        <!-- Header --><header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-white font-orbitron">
+                Universal AI Teaching Agent
+            </h1>
+            <p class="text-lg md:text-xl text-gray-300 mt-2">
+                Your personal AI tutor for any subject.
+            </p>
+        </header>
+
+        <!-- Main Content Grid (Controls on Left, Results on Right) --><main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- === LEFT COLUMN: CONTROLS === --><div class="lg:col-span-1">
+                <form id="generation-form" class="glass-card shadow-xl rounded-2xl p-6 space-y-6">
+                    
+                    <h2 class="text-2xl font-semibold text-white border-b border-gray-700 pb-2 font-orbitron">Create Your Lesson</h2>
+
+                    <!-- NEW: Side-by-Side Grid for Topic & Difficulty --><div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Topic Input --><div>
+                            <label for="topic-input" class="block text-sm font-medium text-gray-300 mb-1">Topic</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="w-5 h-5 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25" />
+                                    </svg>
+                                </div>
+                                <input type="text" id="topic-input" placeholder="e.g., 'Monsoons'" class="block w-full rounded-lg border-gray-600 bg-gray-800 text-white shadow-sm pl-10 p-2.5 focus:border-indigo-500 focus:ring-indigo-500">
+                            </div>
+                        </div>
+
+                        <!-- Difficulty Level --><div>
+                            <label for="difficulty-select" class="block text-sm font-medium text-gray-300 mb-1">Difficulty</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="w-5 h-5 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                      <path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5h14.25M3 9h14.25M3 13.5h14.25M3 18h14.25" />
+                                    </svg>
+                                </div>
+                                <select id="difficulty-select" class="block w-full rounded-lg border-gray-600 bg-gray-800 text-white shadow-sm pl-10 p-2.5 appearance-none focus:border-indigo-500 focus:ring-indigo-500">
+                                    <option value="grade 5">Elementary</option>
+                                    <option value="grade 10">High School</option>
+                                    <option value="college">College</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div> <!-- End of side-by-side grid --><!-- Output Formats - STYLED IN 2-COLUMN GRID --><div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Output Formats</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <!-- Custom Checkbox: Diagram --><label for="format-diagram" class="flex items-center p-3 bg-gray-800/70 rounded-lg shadow-sm cursor-pointer hover:bg-gray-700 transition-all">
+                                <input type="checkbox" id="format-diagram" value="diagram" class="h-4 w-4 rounded border-gray-500 text-indigo-500 focus:ring-indigo-500 bg-gray-700">
+                                <span class="ml-3 text-sm font-medium text-gray-200">Diagram</span>
+                            </label>
+                            <!-- Custom Checkbox: Audio --><label for="format-audio" class="flex items-center p-3 bg-gray-800/70 rounded-lg shadow-sm cursor-pointer hover:bg-gray-700 transition-all">
+                                <input type="checkbox" id="format-audio" value="audio" class="h-4 w-4 rounded border-gray-500 text-indigo-500 focus:ring-indigo-500 bg-gray-700">
+                                <span class="ml-3 text-sm font-medium text-gray-200">Audio</span>
+                            </label>
+                            <!-- Custom Checkbox: Video --><label for="format-video" class="col-span-2 flex items-center p-3 bg-gray-800/70 rounded-lg shadow-sm cursor-pointer hover:bg-gray-700 transition-all">
+                                <input type="checkbox" id="format-video" value="video" class="h-4 w-4 rounded border-gray-500 text-indigo-500 focus:ring-indigo-500 bg-gray-700">
+                                <span class="ml-3 text-sm font-medium text-gray-200">Video Explanation</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Generate Button --><button type="submit" id="generate-button" class="w-full flex justify-center items-center gap-2 bg-indigo-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all disabled:opacity-50 animate-pulse-light">
+                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L1.875 12l2.846-.813a4.5 4.5 0 003.09-3.09L12 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L18.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.62L16 21.75l-.898-1.13a3.375 3.375 0 00-2.31-2.31L12 17.25l1.13-.898a3.375 3.375 0 002.31-2.31L16 13.125l.898 1.13a3.375 3.375 0 002.31 2.31L20.25 18l-1.13.898a3.375 3.375 0 00-2.31 2.31z" />
+                        </svg>
+                        <span>Generate Lesson</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- === RIGHT COLUMN: RESULTS === --><div class="lg:col-span-2">
+                <div class="glass-card shadow-xl rounded-2xl p-6 min-h-[60vh] " id="results-wrapper">
+                    
+                    <!-- Loading State --><div id="loading-spinner" class="hidden h-full flex flex-col justify-center items-center text-center">
+                        <div class="loader"></div>
+                        <p class="text-indigo-300 font-semibold mt-4">Generating your lesson...</p>
+                        <p class="text-gray-400 text-sm">This might take a moment.</p>
+                    </div>
+
+                    <!-- Initial Placeholder State - NEW ICON --><div id="placeholder" class="h-full flex flex-col justify-center items-center text-center text-gray-500">
+                        <svg class="w-16 h-16 text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                          <path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 011.06 0l4.5 4.5a.75.75 0 01-1.06 1.06L12 4.06v11.44a.75.75 0 01-1.5 0V4.06L7.03 8.03a.75.75 0 01-1.06-1.06l4.5-4.5z" clip-rule="evenodd" />
+                          <path fill-rule="evenodd" d="M12 7.5a.75.75 0 01.75.75v10.19l2.47-2.47a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 111.06-1.06l2.47 2.47V8.25A.75.75 0 0112 7.5z" clip-rule="evenodd" />
+                        </svg>
+                        <p class="mt-4 text-lg font-medium font-orbitron text-indigo-300">AI Brain is Idle</p>
+                        <p class="text-sm text-gray-400">Please provide instructions to generate a lesson.</p>
+                    </div>
+                    
+                    <!-- This div will be filled by JavaScript --><div id="results-container" class="space-y-6">
+                        <!-- JS will inject content here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 5. JavaScript Logic --><script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get references to all our elements
+            const generationForm = document.getElementById('generation-form');
+            const topicInput = document.getElementById('topic-input');
+            const difficultySelect = document.getElementById('difficulty-select');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const resultsContainer = document.getElementById('results-container');
+            const generateButton = document.getElementById('generate-button');
+            const placeholder = document.getElementById('placeholder');
+
+            generationForm.addEventListener('submit', async (event) => {
+                event.preventDefault(); 
+                
+                // Show loading spinner and hide placeholder
+                loadingSpinner.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+                resultsContainer.innerHTML = ''; // Clear old results
+                generateButton.disabled = true;
+
+                // Get form values
+                const topic = topicInput.value;
+                const difficulty = difficultySelect.value;
+                const formats = [];
+                if (document.getElementById('format-diagram').checked) formats.push('diagram');
+                if (document.getElementById('format-audio').checked) formats.push('audio');
+                if (document.getElementById('format-video').checked) formats.push('video');
+
+                try {
+                    // Send data to the backend API
+                    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    // !! IMPORTANT: Your backend must be running on this address.
+                    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    const response = await fetch('http://localhost:8000/generate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ topic, difficulty, formats }),
+                    });
+
+                    if (!response.ok) {
+                        // Handle server errors
+                        const errorText = await response.text();
+                        throw new Error(`Server error ${response.status}: ${errorText}`);
+                    }
+
+                    const data = await response.json();
+                    
+                    // Display results
+                    displayResults(data);
+
+                } catch (error) {
+                    // Handle network or fetch errors
+                    console.error('Error fetching lesson:', error);
+                    // Use innerHTML to parse the <p> tag
+                    resultsContainer.innerHTML = `<p class="text-red-600 font-semibold">Oops! Something went wrong. Could not connect to the AI server. ${error.message}</p>`;
+                } finally {
+                    // This runs after success or error
+                    loadingSpinner.classList.add('hidden');
+                    generateButton.disabled = false;
+                }
+            });
+
+            function displayResults(data) {
+                // Clear any error messages
+                resultsContainer.innerHTML = '';
+
+                // data.title (Assumed from a good backend response)
+                if (data.title) {
+                    const titleElement = document.createElement('h3');
+                    // We add Tailwind classes for styling!
+                    titleElement.className = 'text-3xl font-bold text-white border-b border-gray-700 pb-2 font-orbitron';
+                    titleElement.textContent = data.title;
+                    resultsContainer.appendChild(titleElement);
+                }
+
+                // data.text (The main explanation)
+                if (data.text) {
+                    const textElement = document.createElement('p');
+                    textElement.className = 'text-gray-300 text-lg leading-relaxed whitespace-pre-line mt-4';
+                    textElement.textContent = data.text;
+                    resultsContainer.appendChild(textElement);
+                }
+
+                // data.imageUrl (The diagram)
+                if (data.imageUrl) {
+                    const imgElement = document.createElement('img');
+                    imgElement.className = 'w-full rounded-xl shadow-lg mt-6 border border-gray-700';
+                    imgElement.src = data.imageUrl;
+                    imgElement.alt = "Generated diagram for " + topicInput.value;
+                    resultsContainer.appendChild(imgElement);
+                }
+
+                // data.audioUrl (The audio file)
+                if (data.audioUrl) {
+                    const audioLabel = document.createElement('h4');
+                    audioLabel.className = 'text-xl font-semibold text-white mt-8 font-orbitron';
+                    audioLabel.textContent = "Audio Summary";
+                    resultsContainer.appendChild(audioLabel);
+
+                    const audioElement = document.createElement('audio');
+                    audioElement.className = 'w-full mt-2 bg-gray-800 rounded-lg p-2';
+                    audioElement.controls = true;
+                    audioElement.src = data.audioUrl;
+                    resultsContainer.appendChild(audioElement);
+                }
+                
+                // data.videoUrl (The video file)
+                if (data.videoUrl) {
+                    const videoLabel = document.createElement('h4');
+                    videoLabel.className = 'text-xl font-semibold text-white mt-8 font-orbitron';
+                    videoLabel.textContent = "Video Explanation";
+                    resultsContainer.appendChild(videoLabel);
+
+                    const videoElement = document.createElement('video');
+                    videoElement.className = 'w-full rounded-xl shadow-lg mt-2 border border-gray-700';
+                    videoElement.controls = true;
+                    videoElement.src = data.videoUrl;
+                    resultsContainer.appendChild(videoElement);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
